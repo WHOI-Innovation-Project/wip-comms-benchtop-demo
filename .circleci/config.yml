@@ -9,7 +9,7 @@ workflows:
 jobs:
   amd64-build:
     docker:
-      - image: ooicgsn/cgsn-mooring-build-base:1.0.0
+      - image: wipcomms/wip-comms-build-base:1.0.0
     working_directory: /root/wip-comms
     environment:
       - DEBIAN_FRONTEND: "noninteractive"
@@ -41,13 +41,13 @@ jobs:
           path: /root/deb
   armhf-build:
     docker: 
-      - image: ooicgsn/cgsn-mooring-build-armhf:1.0.0
+      - image: wipcomms/wip-comms-build-armhf:1.0.0
     working_directory: /root/wip-comms
     environment:
       - DEBIAN_FRONTEND: "noninteractive"
       - DEBIAN_PRIORITY: "critical"
       - DEBCONF_NOWARNINGS: "yes"
-      - DEBFULLNAME: "CGSN CircleCI"
+      - DEBFULLNAME: "WIP CircleCI"
       - DEBEMAIL: "toby@gobysoft.org"
     steps: 
       - checkout
