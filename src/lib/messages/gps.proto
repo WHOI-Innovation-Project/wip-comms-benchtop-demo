@@ -1,0 +1,13 @@
+import "dccl/protobuf/option_extensions.proto";
+
+package wip.protobuf;
+
+message GPSPosition
+{
+    option (dccl.msg) = { unit_system: "si" };
+    // time from the $GPRMC in microseconds since UNIX
+    required int64 time = 1 [(dccl.field) = { units { prefix: "micro" base_dimensions: "T" } }]; 
+    optional bool fix_valid = 3;
+    optional double latitude = 4 [(dccl.field) = { units { derived_dimensions: "plane_angle" system: "angle::degree" }}];
+    optional double longitude = 5 [(dccl.field) = { units { derived_dimensions: "plane_angle" system: "angle::degree" }}];
+}

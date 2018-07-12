@@ -1,0 +1,1 @@
+add_subdirectory(goby_app_example)

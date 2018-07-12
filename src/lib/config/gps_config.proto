@@ -1,0 +1,14 @@
+import "goby/common/protobuf/app3.proto";
+import "goby/middleware/protobuf/interprocess_config.proto";
+//import "cgsn-mooring/config/serial.proto";
+
+package wip.protobuf;
+
+message GPSDriverConfig
+{
+    // required parameters for ApplicationBase3 class
+    optional goby.protobuf.App3Config app = 1;
+    // required parameters for connecting to 'gobyd'
+    optional goby.protobuf.InterProcessPortalConfig interprocess = 2;
+    //    required cgsn.protobuf.SerialConfig serial = 3;    
+}
