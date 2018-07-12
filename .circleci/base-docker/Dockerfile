@@ -7,5 +7,5 @@ RUN dpkg --add-architecture armhf
 RUN sed -i 's/deb /deb [arch=amd64] /' /etc/apt/sources.list && egrep "^deb " /etc/apt/sources.list | sed 's/amd64/armhf/' | sed 's|http://.*.ubuntu.com/ubuntu/|http://ports.ubuntu.com/|' >> /etc/apt/sources.list
 
 WORKDIR /root
-RUN git clone https://bitbucket.org/ooicgsn/cgsn-mooring-debian.git -b master debian
+RUN git clone https://github.com/GobySoft/wip-comms-debian.git -b master debian
 RUN apt-get update && mk-build-deps -t "apt-get -y --no-install-recommends" -i "debian/control"
