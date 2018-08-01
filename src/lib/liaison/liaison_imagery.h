@@ -42,6 +42,7 @@ namespace wip
         const protobuf::LiaisonImageryConfig& imagery_cfg_;
         
         Wt::WVBoxLayout* main_layout_;
+        Wt::WContainerWidget* image_container_;
             
     };
 }

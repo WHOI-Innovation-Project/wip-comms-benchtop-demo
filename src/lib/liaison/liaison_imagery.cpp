@@ -17,6 +17,9 @@
 // along with wip-comms in the COPYING.md file at the project root.
 // If not, see <http://www.gnu.org/licenses/>.
 
+#include <Wt/WImage>
+#include <Wt/WFileResource>
+
 #include <boost/filesystem.hpp>
 
 #include "liaison_imagery.h"
@@ -26,8 +29,10 @@ using namespace Wt;
 wip::LiaisonImagery::LiaisonImagery(goby::SimpleThread<goby::common::protobuf::LiaisonConfig>* goby_thread, const goby::common::protobuf::LiaisonConfig& cfg, Wt::WContainerWidget* parent)
     : goby::common::LiaisonContainer(parent),
       imagery_cfg_(cfg.GetExtension(wip::protobuf::imagery_config)),
-      main_layout_(new Wt::WVBoxLayout(this))
+      main_layout_(new Wt::WVBoxLayout(this)),
+      image_container_(new Wt::WContainerWidget(this))
 {
+    main_layout_->addWidget(image_container_);
     
     boost::filesystem::path image_dir(imagery_cfg_.image_dir());
     if(!boost::filesystem::exists(image_dir))
@@ -37,21 +42,24 @@ wip::LiaisonImagery::LiaisonImagery(goby::SimpleThread<goby::common::protobuf::L
     else
     {
         
-        std::vector<boost::filesystem::path> v;
+        std::vector<boost::filesystem::path> images;
         std::copy(boost::filesystem::directory_iterator(image_dir),
                   boost::filesystem::directory_iterator(),
-                  std::back_inserter(v));
+                  std::back_inserter(images));
 
-        std::sort(v.begin(), v.end());  
-        
-        for (typename decltype(v)::const_iterator it (v.begin()); it != v.end(); ++it)
+        std::sort(images.begin(), images.end());  
+
+        for(const auto& image : images)
         {
-            std::cout << "   " << *it << '\n';
+            auto c = new WContainerWidget(image_container_);
+            c->setInline(true);
+            c->setPadding(10);
+            new WImage(new WFileResource(image.native()), c);
         }
+        
     }
     
     
-    //    main_layout_->addWidget();    
 
     set_name("WIPImagery");
 }
