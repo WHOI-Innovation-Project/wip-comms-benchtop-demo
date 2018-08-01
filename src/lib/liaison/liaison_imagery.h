@@ -26,6 +26,8 @@
 #include <Wt/WColor>
 #include <Wt/WVBoxLayout>
 
+#include "wip-comms/config/liaison_config.pb.h"
+
 #include "goby/middleware/liaison/liaison_container.h"
 #include "goby/middleware/multi-thread-application.h"
 
@@ -37,6 +39,8 @@ namespace wip
         LiaisonImagery(goby::SimpleThread<goby::common::protobuf::LiaisonConfig>* goby_thread, const goby::common::protobuf::LiaisonConfig& cfg, Wt::WContainerWidget* parent = 0);
             
     private:
+        const protobuf::LiaisonImageryConfig& imagery_cfg_;
+        
         Wt::WVBoxLayout* main_layout_;
             
     };
