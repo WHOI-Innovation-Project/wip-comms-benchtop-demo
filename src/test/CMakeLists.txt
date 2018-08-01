@@ -2,3 +2,4 @@
 set(CMAKE_SKIP_RPATH OFF)
 
 add_subdirectory(unit)
+add_subdirectory(tools)

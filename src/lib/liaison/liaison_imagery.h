@@ -17,27 +17,29 @@
 // along with wip-comms in the COPYING.md file at the project root.
 // If not, see <http://www.gnu.org/licenses/>.
 
-#include "publisher.h"
-#include "subscriber.h"
+#ifndef LIAISONIMAGERY20180801H
+#define LIAISONIMAGERY20180801H
 
-using AppBase = goby::MultiThreadStandaloneApplication<wip::protobuf::GPSDriverConfig>;
+#include <Wt/WText>
+#include <Wt/WCssDecorationStyle>
+#include <Wt/WBorder>
+#include <Wt/WColor>
+#include <Wt/WVBoxLayout>
 
-class BasicMultiThreadPubSub : public AppBase
+#include "goby/middleware/liaison/liaison_container.h"
+#include "goby/middleware/multi-thread-application.h"
+
+namespace wip
 {
-public:
-    BasicMultiThreadPubSub() :
-        AppBase()
-        
-        {
-            // launch a publisher then two subscriber threads
-            launch_thread<BasicPublisher>();
-            launch_thread<BasicSubscriber>(0);
-            launch_thread<BasicSubscriber>(1);
-        }
-};
+    class LiaisonImagery : public goby::common::LiaisonContainer
+    {
+    public:
+        LiaisonImagery(goby::SimpleThread<goby::common::protobuf::LiaisonConfig>* goby_thread, const goby::common::protobuf::LiaisonConfig& cfg, Wt::WContainerWidget* parent = 0);
+            
+    private:
+        Wt::WVBoxLayout* main_layout_;
+            
+    };
+}
 
-
-
-
-int main(int argc, char* argv[])
-{ return goby::run<BasicMultiThreadPubSub>(argc, argv); }
+#endif

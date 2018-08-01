@@ -17,27 +17,20 @@
 // along with wip-comms in the COPYING.md file at the project root.
 // If not, see <http://www.gnu.org/licenses/>.
 
-#include "publisher.h"
-#include "subscriber.h"
+#ifndef LIAISONLOAD20180801H
+#define LIAISONLOAD20180801H
 
-using AppBase = goby::MultiThreadStandaloneApplication<wip::protobuf::GPSDriverConfig>;
+#include <vector>
 
-class BasicMultiThreadPubSub : public AppBase
+#include "goby/middleware/liaison/liaison_container.h"
+#include "goby/middleware/multi-thread-application.h"
+
+extern "C"
 {
-public:
-    BasicMultiThreadPubSub() :
-        AppBase()
-        
-        {
-            // launch a publisher then two subscriber threads
-            launch_thread<BasicPublisher>();
-            launch_thread<BasicSubscriber>(0);
-            launch_thread<BasicSubscriber>(1);
-        }
-};
+    std::vector<goby::common::LiaisonContainer*> goby3_liaison_load(
+        goby::SimpleThread<goby::common::protobuf::LiaisonConfig>* goby_thread,
+        const goby::common::protobuf::LiaisonConfig& cfg);    
+}
 
-
-
-
-int main(int argc, char* argv[])
-{ return goby::run<BasicMultiThreadPubSub>(argc, argv); }
+    
+#endif

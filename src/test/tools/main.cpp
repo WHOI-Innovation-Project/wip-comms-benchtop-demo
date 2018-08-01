@@ -17,22 +17,28 @@
 // along with wip-comms in the COPYING.md file at the project root.
 // If not, see <http://www.gnu.org/licenses/>.
 
-#include "publisher.h"
-#include "subscriber.h"
+#include "goby/middleware/single-thread-application.h"
+#include "goby/middleware/liaison/groups.h"
 
-using AppBase = goby::MultiThreadStandaloneApplication<wip::protobuf::GPSDriverConfig>;
+#include "config.pb.h"
+#include "gps.pb.h"
 
-class BasicMultiThreadPubSub : public AppBase
+
+using AppBase = goby::SingleThreadApplication<LiaisonTestConfig>;
+
+class LiaisonTest : public AppBase
 {
 public:
-    BasicMultiThreadPubSub() :
-        AppBase()
-        
+    LiaisonTest()
         {
-            // launch a publisher then two subscriber threads
-            launch_thread<BasicPublisher>();
-            launch_thread<BasicSubscriber>(0);
-            launch_thread<BasicSubscriber>(1);
+            interprocess().subscribe<goby::liaison::groups::commander_out,
+                                     wip::protobuf::GPSPosition>(
+                                         [](const wip::protobuf::GPSPosition& pos)
+                                         {
+                                             std::cout << "Received: " << pos.DebugString() << std::endl;
+                                         }
+                                         );         
+                                     
         }
 };
 
@@ -40,4 +46,4 @@ public:
 
 
 int main(int argc, char* argv[])
-{ return goby::run<BasicMultiThreadPubSub>(argc, argv); }
+{ return goby::run<LiaisonTest>(argc, argv); }
