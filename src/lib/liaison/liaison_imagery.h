@@ -36,7 +36,7 @@ namespace wip
     class LiaisonImagery : public goby::common::LiaisonContainer
     {
     public:
-        LiaisonImagery(goby::SimpleThread<goby::common::protobuf::LiaisonConfig>* goby_thread, const goby::common::protobuf::LiaisonConfig& cfg, Wt::WContainerWidget* parent = 0);
+        LiaisonImagery(const goby::common::protobuf::LiaisonConfig& cfg);
             
     private:
         const protobuf::LiaisonImageryConfig& imagery_cfg_;

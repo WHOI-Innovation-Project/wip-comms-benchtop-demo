@@ -26,9 +26,8 @@
 
 using namespace Wt;
 
-wip::LiaisonImagery::LiaisonImagery(goby::SimpleThread<goby::common::protobuf::LiaisonConfig>* goby_thread, const goby::common::protobuf::LiaisonConfig& cfg, Wt::WContainerWidget* parent)
-    : goby::common::LiaisonContainer(parent),
-      imagery_cfg_(cfg.GetExtension(wip::protobuf::imagery_config)),
+wip::LiaisonImagery::LiaisonImagery(const goby::common::protobuf::LiaisonConfig& cfg)
+    : imagery_cfg_(cfg.GetExtension(wip::protobuf::imagery_config)),
       main_layout_(new Wt::WVBoxLayout(this)),
       image_container_(new Wt::WContainerWidget(this))
 {

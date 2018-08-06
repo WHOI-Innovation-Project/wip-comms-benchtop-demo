@@ -28,6 +28,8 @@ namespace wip
     {    
         constexpr goby::Group ready{"wip::ready"};        
         constexpr goby::Group gps{"wip::gps"};  
+        constexpr goby::Group status{"wip::status"};
+        
     }
 }
 

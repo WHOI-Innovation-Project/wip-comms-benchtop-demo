@@ -28,7 +28,6 @@
 extern "C"
 {
     std::vector<goby::common::LiaisonContainer*> goby3_liaison_load(
-        goby::SimpleThread<goby::common::protobuf::LiaisonConfig>* goby_thread,
         const goby::common::protobuf::LiaisonConfig& cfg);    
 }
 

@@ -20,16 +20,17 @@
 #include "goby/middleware/single-thread-application.h"
 #include "goby/middleware/liaison/groups.h"
 
+#include "groups.h"
 #include "config.pb.h"
 #include "gps.pb.h"
-
+#include "status.pb.h"
 
 using AppBase = goby::SingleThreadApplication<LiaisonTestConfig>;
 
 class LiaisonTest : public AppBase
 {
 public:
-    LiaisonTest()
+    LiaisonTest() : AppBase(1*boost::units::si::hertz)
         {
             interprocess().subscribe<goby::liaison::groups::commander_out,
                                      wip::protobuf::GPSPosition>(
@@ -40,6 +41,15 @@ public:
                                          );         
                                      
         }
+
+    void loop() override
+        {
+            wip::protobuf::Status status;
+            status.set_time_with_units(goby::time::now());
+            interprocess().publish<wip::groups::status>(status);
+            std::cout << "Sending: " << status.ShortDebugString() << std::endl;
+        }
+    
 };
 
 
