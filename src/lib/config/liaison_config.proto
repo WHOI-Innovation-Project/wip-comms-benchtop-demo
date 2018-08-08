@@ -1,0 +1,14 @@
+import "goby/middleware/protobuf/liaison_config.proto";
+
+package wip.protobuf;
+
+extend goby.common.protobuf.LiaisonConfig
+{
+    optional LiaisonImageryConfig imagery_config = 1200;
+}
+
+
+message LiaisonImageryConfig
+{
+    optional string image_dir = 1;
+}

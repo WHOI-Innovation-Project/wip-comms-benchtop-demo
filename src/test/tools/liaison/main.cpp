@@ -32,21 +32,35 @@ class LiaisonTest : public AppBase
 public:
     LiaisonTest() : AppBase(1*boost::units::si::hertz)
         {
-            interprocess().subscribe<goby::liaison::groups::commander_out,
-                                     wip::protobuf::GPSPosition>(
-                                         [](const wip::protobuf::GPSPosition& pos)
-                                         {
-                                             std::cout << "Received: " << pos.DebugString() << std::endl;
-                                         }
-                                         );         
-                                     
+            // intervehicle().subscribe<goby::liaison::groups::commander_out,
+            //                          wip::protobuf::GPSPosition>(
+            //                              [](const wip::protobuf::GPSPosition& pos)
+            //                              {
+            //                                  std::cout << "Received: " << pos.DebugString() << std::endl;
+            //                              }
+            //                              );         
+
+            intervehicle().subscribe_dynamic<wip::protobuf::Status>([](const wip::protobuf::Status& status)
+                                                            {
+                                                                std::cout << "IV: Received: " << status.DebugString() << std::endl;
+                                                            }
+                                         );
+
+            interprocess().subscribe<wip::groups::status,
+                                     wip::protobuf::Status>([](const wip::protobuf::Status& status)
+                                                            {
+                                                                std::cout << "IP: Received: " << status.DebugString() << std::endl;
+                                                            }
+                                         );
+            
         }
 
     void loop() override
         {
             wip::protobuf::Status status;
             status.set_time_with_units(goby::time::now());
-            interprocess().publish<wip::groups::status>(status);
+            status.set_src(cfg().modem_id());
+            intervehicle().publish<wip::groups::status>(status);
             std::cout << "Sending: " << status.ShortDebugString() << std::endl;
         }
     

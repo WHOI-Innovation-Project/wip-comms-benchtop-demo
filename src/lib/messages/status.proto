@@ -1,0 +1,15 @@
+import "dccl/protobuf/option_extensions.proto";
+
+package wip.protobuf;
+
+message Status
+{
+    option (dccl.msg) = { id: 124
+                          max_bytes: 32
+                          codec_version: 3
+                          unit_system: "si" };
+    
+    required int64 time = 1 [(dccl.field) = { units { prefix: "micro" base_dimensions: "T" } codec: "dccl.time2" }];
+    
+    required int32 src = 2 [(dccl.field) = { min: 0 max: 31 } ];
+}
