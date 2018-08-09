@@ -24,42 +24,48 @@
 
 #include "liaison_imagery.h"
 
+using goby::glog;
 using namespace Wt;
 
 wip::LiaisonImagery::LiaisonImagery(const goby::common::protobuf::LiaisonConfig& cfg)
-    : imagery_cfg_(cfg.GetExtension(wip::protobuf::imagery_config)),
+    : goby::common::LiaisonContainerWithComms<LiaisonImagery, ImageryCommsThread>(cfg),
+      imagery_cfg_(cfg.GetExtension(wip::protobuf::imagery_config)),
       main_layout_(new Wt::WVBoxLayout(this)),
       image_container_(new Wt::WContainerWidget(this))
 {
     main_layout_->addWidget(image_container_);
     
-    boost::filesystem::path image_dir(imagery_cfg_.image_dir());
-    if(!boost::filesystem::exists(image_dir))
+
+    set_name("WIPImagery");
+}
+
+
+void wip::LiaisonImagery::handle_updated_image(const dsl::protobuf::UpdatedImageEvent& event)
+{
+    glog.is_debug1() && glog << "updating image: " << event.ShortDebugString() << std::endl;
+    boost::filesystem::path image(event.image_path());
+
+    auto png_file = image.parent_path() / image.stem();
+    png_file += ".png";
+
+    std::string convert_cmd = "convert " + image.native() + " " + png_file.native();
+    
+    system(convert_cmd.c_str());
+    
+    auto it = images_.find(event.image_id());
+    if(it == images_.end())
     {
-        goby::glog.is_warn() && goby::glog << "No such directory: " << image_dir << std::endl;
+        auto c = new WContainerWidget(image_container_);
+        c->setInline(true);
+        c->setPadding(10);
+        auto wimage = new WImage(new WFileResource(png_file.native()), c);
+        images_.insert(std::make_pair(event.image_id(), wimage));
     }
     else
     {
-        
-        std::vector<boost::filesystem::path> images;
-        std::copy(boost::filesystem::directory_iterator(image_dir),
-                  boost::filesystem::directory_iterator(),
-                  std::back_inserter(images));
-
-        std::sort(images.begin(), images.end());  
-
-        for(const auto& image : images)
-        {
-            auto c = new WContainerWidget(image_container_);
-            c->setInline(true);
-            c->setPadding(10);
-            new WImage(new WFileResource(image.native()), c);
-        }
-        
+        it->second->imageLink().resource()->setChanged();
     }
     
     
-
-    set_name("WIPImagery");
 }
 

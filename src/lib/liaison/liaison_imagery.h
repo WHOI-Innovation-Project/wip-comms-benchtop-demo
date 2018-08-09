@@ -31,20 +31,59 @@
 #include "goby/middleware/liaison/liaison_container.h"
 #include "goby/middleware/multi-thread-application.h"
 
+#include "progressive_imagery/goby/groups.h"
+#include "progressive_imagery/progressive_imagery.pb.h"
+
 namespace wip
 {
-    class LiaisonImagery : public goby::common::LiaisonContainer
+    class ImageryCommsThread;
+    
+    class LiaisonImagery : public goby::common::LiaisonContainerWithComms<LiaisonImagery,
+        ImageryCommsThread>
     {
     public:
         LiaisonImagery(const goby::common::protobuf::LiaisonConfig& cfg);
-            
+
+        void handle_updated_image(const dsl::protobuf::UpdatedImageEvent& event);
+        
     private:
         const protobuf::LiaisonImageryConfig& imagery_cfg_;
         
         Wt::WVBoxLayout* main_layout_;
         Wt::WContainerWidget* image_container_;
-            
+
+        std::map<int, Wt::WImage*> images_;
+        
     };
+    
+     
+    class ImageryCommsThread : public goby::common::LiaisonCommsThread<LiaisonImagery>
+    {
+    public:
+    ImageryCommsThread(LiaisonImagery* wt_app, const goby::common::protobuf::LiaisonConfig& config, int index) :
+        goby::common::LiaisonCommsThread<LiaisonImagery>(wt_app, config, index),
+            wt_app_(wt_app)
+            {
+                interprocess().subscribe<dsl::progressive_imagery::groups::updated_image,
+                    dsl::protobuf::UpdatedImageEvent>(
+                        [this](const dsl::protobuf::UpdatedImageEvent& updated_image)
+                        {
+                            wt_app_->post_to_wt(
+                                [=]() { wt_app_->handle_updated_image(updated_image); });   
+                        });
+                
+            }
+            ~ImageryCommsThread()
+            {
+            }
+            
+        private:
+            friend class LiaisonImagery;
+            LiaisonImagery* wt_app_;
+            
+        };
+    
+    
 }
 
 #endif

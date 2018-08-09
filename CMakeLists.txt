@@ -30,6 +30,11 @@ message("Using Goby in ${GOBY_INCLUDE_DIR}")
 include_directories("${GOBY_INCLUDE_DIR}")
 protobuf_include_dirs("${GOBY_INCLUDE_DIR}")
 
+# todo: improve with findpackage
+
+include_directories(/home/toby/repo/progressive-imagery/include)
+
+
 # enable testing
 option(enable_testing "Enable building of tests using CTest (if set to ON, you can run tests with 'make test')" ON)
 if(enable_testing)

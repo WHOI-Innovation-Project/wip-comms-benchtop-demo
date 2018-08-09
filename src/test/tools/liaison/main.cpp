@@ -61,6 +61,7 @@ public:
             status.set_time_with_units(goby::time::now());
             status.set_src(cfg().modem_id());
             intervehicle().publish<wip::groups::status>(status);
+            //            interprocess().publish<wip::groups::status>(status);
             std::cout << "Sending: " << status.ShortDebugString() << std::endl;
         }
     
