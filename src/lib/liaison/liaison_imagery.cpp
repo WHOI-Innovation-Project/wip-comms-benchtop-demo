@@ -75,15 +75,8 @@ wip::LiaisonImagery::LiaisonImagery(const goby::common::protobuf::LiaisonConfig&
 
 void wip::LiaisonImagery::handle_updated_image(const dsl::protobuf::UpdatedImageEvent& event)
 {
-    glog.is_debug1() && glog << "updating image: " << event.ShortDebugString() << std::endl;
+    //    glog.is_debug1() && glog << "updating image: " << event.ShortDebugString() << std::endl;
     boost::filesystem::path image(event.image_path());
-
-    auto png_file = image.parent_path() / image.stem();
-    png_file += ".png";
-
-    std::string convert_cmd = "convert " + image.native() + " " + png_file.native();
-    
-    system(convert_cmd.c_str());
     
     auto it = images_.find(event.image_id());
     if(it == images_.end())
@@ -91,7 +84,7 @@ void wip::LiaisonImagery::handle_updated_image(const dsl::protobuf::UpdatedImage
         auto c = new WContainerWidget(image_container_);
         c->setInline(true);
         c->setPadding(10);
-        auto wimage = new WImage(new WFileResource(png_file.native()), c);
+        auto wimage = new WImage(new WFileResource(image.native()), c);
 
         images_.insert(std::make_pair(event.image_id(), ImageData({ c, wimage })));
         auto id = event.image_id();
