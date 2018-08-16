@@ -25,6 +25,10 @@
 #include <Wt/WBorder>
 #include <Wt/WColor>
 #include <Wt/WVBoxLayout>
+#include <Wt/WImage>
+#include <Wt/WPushButton>
+#include <Wt/WGroupBox>
+#include <Wt/WDoubleSpinBox>
 
 #include "wip-comms/config/liaison_config.pb.h"
 
@@ -45,15 +49,96 @@ namespace wip
         LiaisonImagery(const goby::common::protobuf::LiaisonConfig& cfg);
 
         void handle_updated_image(const dsl::protobuf::UpdatedImageEvent& event);
+        void handle_received_status(const dsl::protobuf::ReceivedStatus& status);
+
+    private:
+        void toggle_selection(const Wt::WMouseEvent& e, int id)
+        {            
+            auto& data = images_.at(id);
+
+            // progressive imagery can only handle up to 10 updates at a time
+            if(!data.selected && selected_ids.size() == 10)
+            {
+                info_text_->setText("You can only select up to 10 images at a time.");
+                return;
+            }
+
+            data.selected = data.selected ? false : true;
+            if(data.selected)
+                selected_ids.insert(id);
+            else
+                selected_ids.erase(id);
+
+                                      
+            update_border(id);
+            // for some reason this is needed to force rendering change on clicked() event
+            data.image->disable();
+            data.image->enable();
+
+        }
+        
+        
+        void update_info(const Wt::WMouseEvent& e, int id)
+        {
+            info_text_->setText("<pre>" + images_.at(id).last_status.DebugString() + "</pre>");
+            active_id = id;
+        }
+
+        void update_border(int id)
+        {
+            
+            auto& data = images_.at(id);
+            auto frac_rx = data.last_status.fraction_received();
+            auto image = data.image;
+            Wt::WCssDecorationStyle style;
+            
+            if(data.selected)
+            {
+                Wt::WBorder border(Wt::WBorder::Solid, Wt::WBorder::Medium, Wt::WColor(0, 0, 255));
+                style.setBorder(border);
+
+                image->setDecorationStyle(style);
+
+            }
+            else
+            {
+                Wt::WBorder border(Wt::WBorder::Solid, Wt::WBorder::Medium, Wt::WColor(255*(1-frac_rx), 255*frac_rx, 0)
+);
+                style.setBorder(border);
+                image->setDecorationStyle(style);
+            }
+        }
+        
         
     private:
+        
         const protobuf::LiaisonImageryConfig& imagery_cfg_;
         
-        Wt::WVBoxLayout* main_layout_;
-        Wt::WContainerWidget* image_container_;
 
-        std::map<int, Wt::WImage*> images_;
+        Wt::WGroupBox* control_container_;
+        Wt::WText* request_text_;
+        Wt::WDoubleSpinBox* request_frac_;
+        Wt::WPushButton* request_button_;
         
+        Wt::WGroupBox* image_container_;
+
+        struct ImageData
+        {
+            Wt::WContainerWidget* image_container;
+            Wt::WImage* image;
+            dsl::protobuf::ImageRxStatus last_status;
+            bool selected { false };
+        };
+        
+        std::map<int, ImageData> images_;
+
+        Wt::WPanel* info_panel_;
+        Wt::WText* info_text_;
+
+        int active_id { -1 };
+
+        std::set<int> selected_ids;
+
     };
     
      
@@ -70,6 +155,14 @@ namespace wip
                         {
                             wt_app_->post_to_wt(
                                 [=]() { wt_app_->handle_updated_image(updated_image); });   
+                        });
+
+                interprocess().subscribe<dsl::progressive_imagery::groups::received_status,
+                    dsl::protobuf::ReceivedStatus>(
+                        [this](const dsl::protobuf::ReceivedStatus& status)
+                        {
+                            wt_app_->post_to_wt(
+                                [=]() { wt_app_->handle_received_status(status); });
                         });
                 
             }
