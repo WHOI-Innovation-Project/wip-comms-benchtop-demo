@@ -1,0 +1,13 @@
+[Unit]
+Description=Goby Liaison GUI (web server)
+After=gobyd.service
+
+[Service]
+Type=simple
+User=gobysoft
+Environment="GOBY_LIAISON_PLUGINS=/home/gobysoft/wip-comms-benchtop-demo/build/lib/libwip_comms_liaison.so"
+WorkingDirectory=/home/gobysoft/wip-comms-benchtop-demo/config
+ExecStart=/home/gobysoft/goby3/bin/goby_liaison liaison-operator.pb.cfg
+
+[Install]
+WantedBy=gobyd.service

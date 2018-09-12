@@ -1,0 +1,13 @@
+[Unit]
+Description=Goby3 Daemon
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=gobysoft
+WorkingDirectory=/home/gobysoft/wip-comms-benchtop-demo/config
+ExecStart=/home/gobysoft/goby3/bin/gobyd gobyd-operator.pb.cfg
+
+[Install]
+WantedBy=multi-user.target
