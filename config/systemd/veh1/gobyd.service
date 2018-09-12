@@ -1,7 +1,7 @@
 [Unit]
 Description=Goby3 Daemon
-After=network-online.target
-Wants=network-online.target
+After=sys-devices-virtual-net-tun0.device
+Wants=sys-devices-virtual-net-tun0.device
 
 [Service]
 Type=simple
