@@ -1,0 +1,14 @@
+[Unit]
+Description=Progressive Imagery 
+After=gobyd.service
+BindsTo=gobyd.service
+
+[Service]
+Type=simple
+User=gobysoft
+WorkingDirectory=/home/gobysoft/wip-comms-benchtop-demo/config
+ExecStartPre=/bin/bash -c "/bin/rm -rf /tmp/imgin; /bin/mkdir /tmp/imgin; sleep 1"
+ExecStart=/home/gobysoft/progressive-imagery/build/src/goby/progressive_imagery_g dpi-veh1.pb.cfg
+
+[Install]
+WantedBy=gobyd.service
