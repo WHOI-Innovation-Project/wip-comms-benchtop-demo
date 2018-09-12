@@ -32,7 +32,8 @@ protobuf_include_dirs("${GOBY_INCLUDE_DIR}")
 
 # todo: improve with findpackage
 
-include_directories(/home/toby/repo/progressive-imagery/include)
+set(PROGRESSIVE_IMAGERY_PATH /home/gobysoft/progressive-imagery)
+include_directories(${PROGRESSIVE_IMAGERY_PATH}/include)
 
 
 # enable testing
