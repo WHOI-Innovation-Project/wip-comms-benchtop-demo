@@ -1,6 +1,7 @@
 [Unit]
 Description=Goby Liaison GUI (web server)
 After=gobyd.service
+BindsTo=gobyd.service
 
 [Service]
 Type=simple
