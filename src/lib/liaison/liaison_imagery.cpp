@@ -32,6 +32,8 @@ wip::LiaisonImagery::LiaisonImagery(const goby::common::protobuf::LiaisonConfig&
     : goby::common::LiaisonContainerWithComms<LiaisonImagery, ImageryCommsThread>(cfg),
     imagery_cfg_(cfg.GetExtension(wip::protobuf::imagery_config)),
     control_container_(new Wt::WGroupBox("Control", this)),
+    status_container_(new Wt::WGroupBox("Status", this)),
+    status_text_(new Wt::WText(status_container_)),
     request_text_(new Wt::WText("Fraction requested: ", control_container_)),
     request_frac_(new Wt::WDoubleSpinBox(control_container_)),
     request_button_(new Wt::WPushButton("Request", control_container_)),
@@ -118,4 +120,10 @@ void wip::LiaisonImagery::handle_received_status(const dsl::protobuf::ReceivedSt
             }
         }
     }
+}
+
+void wip::LiaisonImagery::handle_received_veh_status(const goby::moos::protobuf::NodeStatus& status)
+{
+    glog.is_debug1() && glog << "Received status: " << status.ShortDebugString() << std::endl;
+    status_text_->setText("<pre>" + status.DebugString() + "</pre>");
 }

@@ -1,22 +1,12 @@
 import "goby/common/protobuf/app3.proto";
 import "goby/middleware/protobuf/interprocess_config.proto";
-import "cgsn-mooring/config/serial_config.proto";
-import "geo_origin.proto";
 
-
-package wip.protobuf;
-
-message GPSDriverConfig
+message BasicMultithreadPubSubConfig
 {
     // required parameters for ApplicationBase3 class
     optional goby.protobuf.App3Config app = 1;
     // required parameters for connecting to 'gobyd'
     optional goby.protobuf.InterProcessPortalConfig interprocess = 2;
-    required cgsn.protobuf.SerialConfig serial = 3;
 
-    required int32 modem_id = 10;
-    
-    optional int32 intervehicle_period = 11 [default = 30];
-
-    required GeoOrigin origin = 20;
+    optional int32 my_value = 3;
 }

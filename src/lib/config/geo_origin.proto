@@ -1,0 +1,7 @@
+import "dccl/protobuf/option_extensions.proto";
+
+message GeoOrigin
+{
+    required double lat = 1 [(dccl.field) = { units { derived_dimensions: "plane_angle" system: "angle::degree" }}];
+    required double lon = 2 [(dccl.field) = { units { derived_dimensions: "plane_angle" system: "angle::degree" }}];
+}

@@ -27,8 +27,14 @@ namespace wip
     namespace groups
     {    
         constexpr goby::Group ready{"wip::ready"};        
-        constexpr goby::Group gps{"wip::gps"};  
         constexpr goby::Group status{"wip::status"};
+
+        namespace gps
+        {
+            constexpr goby::Group raw_in{"wip::gps::raw_in"};
+            constexpr goby::Group raw_out{"wip::gps::raw_out"};
+            constexpr goby::Group data{"wip::gps"};
+        }
         
     }
 }

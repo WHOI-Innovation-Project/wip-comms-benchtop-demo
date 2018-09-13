@@ -31,10 +31,13 @@ include_directories("${GOBY_INCLUDE_DIR}")
 protobuf_include_dirs("${GOBY_INCLUDE_DIR}")
 
 # todo: improve with findpackage
-
-set(PROGRESSIVE_IMAGERY_PATH /home/gobysoft/progressive-imagery)
+set(PROGRESSIVE_IMAGERY_PATH /home/gobysoft/progressive-imagery CACHE STRING "PATH to progressive-imagery library")
 include_directories(${PROGRESSIVE_IMAGERY_PATH}/include)
 
+find_package(cgsn-mooring REQUIRED)
+get_target_property(CGSN_MOORING_INCLUDE_DIR cgsn_messages INTERFACE_INCLUDE_DIRECTORIES)
+include_directories(${CGSN_MOORING_INCLUDE_DIR})
+protobuf_include_dirs(${CGSN_MOORING_INCLUDE_DIR})
 
 # enable testing
 option(enable_testing "Enable building of tests using CTest (if set to ON, you can run tests with 'make test')" ON)

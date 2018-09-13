@@ -31,9 +31,11 @@
 #include <Wt/WDoubleSpinBox>
 
 #include "wip-comms/config/liaison_config.pb.h"
+#include "wip-comms/messages/groups.h"
 
 #include "goby/middleware/liaison/liaison_container.h"
 #include "goby/middleware/multi-thread-application.h"
+#include "goby/moos/protobuf/node_status.pb.h"
 
 #include "progressive_imagery/goby/groups.h"
 #include "progressive_imagery/progressive_imagery.pb.h"
@@ -50,6 +52,7 @@ namespace wip
 
         void handle_updated_image(const dsl::protobuf::UpdatedImageEvent& event);
         void handle_received_status(const dsl::protobuf::ReceivedStatus& status);
+        void handle_received_veh_status(const goby::moos::protobuf::NodeStatus& status);
 
     private:
         void toggle_selection(const Wt::WMouseEvent& e, int id)
@@ -120,6 +123,9 @@ namespace wip
         Wt::WDoubleSpinBox* request_frac_;
         Wt::WPushButton* request_button_;
         
+        Wt::WGroupBox* status_container_;
+        Wt::WText* status_text_;
+
         Wt::WGroupBox* image_container_;
 
         struct ImageData
@@ -164,6 +170,14 @@ namespace wip
                             wt_app_->post_to_wt(
                                 [=]() { wt_app_->handle_received_status(status); });
                         });
+
+                intervehicle().subscribe_dynamic<goby::moos::protobuf::NodeStatus>(
+                        [this](const goby::moos::protobuf::NodeStatus& status)
+                        {
+                            wt_app_->post_to_wt(
+                                [=]() { wt_app_->handle_received_veh_status(status); });
+                        });
+                
                 
             }
             ~ImageryCommsThread()

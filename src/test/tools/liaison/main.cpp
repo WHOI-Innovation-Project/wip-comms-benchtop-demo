@@ -20,10 +20,10 @@
 #include "goby/middleware/single-thread-application.h"
 #include "goby/middleware/liaison/groups.h"
 
-#include "groups.h"
+#include "wip-comms/messages/groups.h"
 #include "config.pb.h"
-#include "gps.pb.h"
-#include "status.pb.h"
+#include "wip-comms/messages/gps.pb.h"
+#include "wip-comms/messages/status.pb.h"
 
 using AppBase = goby::SingleThreadApplication<LiaisonTestConfig>;
 
