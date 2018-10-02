@@ -1,5 +1,4 @@
 import "goby/middleware/protobuf/liaison_config.proto";
-import "geo_origin.proto";
 
 package wip.protobuf;
 
@@ -11,6 +10,6 @@ extend goby.common.protobuf.LiaisonConfig
 
 message LiaisonImageryConfig
 {
-    required GeoOrigin origin = 1;
-
+    optional string initial_image_path = 1;
+    optional string initial_filename_regex = 2 [default="^image_([0-9]*)\\.png$"];
 }

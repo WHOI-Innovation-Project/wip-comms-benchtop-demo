@@ -1,6 +1,7 @@
 protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${project_INC_DIR}/wip-comms/messages
   gps.proto
   status.proto
+  image_attributes.proto
   )
 
 add_library(wip_comms_messages SHARED ${PROTO_SRCS} ${PROTO_HDRS})

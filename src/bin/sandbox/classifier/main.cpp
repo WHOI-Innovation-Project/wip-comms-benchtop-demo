@@ -17,38 +17,24 @@
 // along with wip-comms in the COPYING.md file at the project root.
 // If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef MULTITHREAD_SUBSCRIBER_H
-#define MULTITHREAD_SUBSCRIBER_H
-
 #include "goby/middleware/single-thread-application.h"
 
-#include "wip-comms/messages/gps.pb.h"
 #include "wip-comms/messages/groups.h"
+#include "wip-comms/config/classifier_config.pb.h"
 
-#include "wip-comms/config/gps_config.pb.h"
+using AppBase = goby::SingleThreadApplication<wip::protobuf::ClassifierConfig>;
+using goby::glog;
 
-using ThreadBase = goby::SimpleThread<wip::protobuf::GPSDriverConfig>;
-
-class BasicSubscriber : public ThreadBase
+class Classifier : public AppBase
 {
 public:
-BasicSubscriber(const wip::protobuf::GPSDriverConfig& config, int index)
-    : ThreadBase(config, 0, index)
+    Classifier() :
+        AppBase()
         {
-            auto gps_callback = [this] (const wip::protobuf::GPSPosition& gps)
-                { this->incoming_gps(gps); };
-
-            // subscribe only on the interthread layer
-            interthread().subscribe<wip::groups::gps, wip::protobuf::GPSPosition>(gps_callback);
         }
-
-    void incoming_gps(const wip::protobuf::GPSPosition gps)
-        {
-            using goby::glog;
-            using namespace goby::common::logger;
-
-            glog.is(VERBOSE) && glog <<  "Rx: " << ThreadBase::index() <<  ": " << gps.DebugString() << std::flush;
-        }
+        
 };
 
-#endif
+
+int main(int argc, char* argv[])
+{ return goby::run<Classifier>(argc, argv); }

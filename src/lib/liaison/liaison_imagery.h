@@ -32,10 +32,11 @@
 
 #include "wip-comms/config/liaison_config.pb.h"
 #include "wip-comms/messages/groups.h"
+#include "wip-comms/messages/gps.pb.h"
 
 #include "goby/middleware/liaison/liaison_container.h"
 #include "goby/middleware/multi-thread-application.h"
-#include "goby/moos/protobuf/node_status.pb.h"
+
 
 #include "progressive_imagery/goby/groups.h"
 #include "progressive_imagery/progressive_imagery.pb.h"
@@ -52,7 +53,7 @@ namespace wip
 
         void handle_updated_image(const dsl::protobuf::UpdatedImageEvent& event);
         void handle_received_status(const dsl::protobuf::ReceivedStatus& status);
-        void handle_received_veh_status(const goby::moos::protobuf::NodeStatus& status);
+        void handle_received_veh_status(const wip::protobuf::GPSPosition& status);
 
     private:
         void toggle_selection(const Wt::WMouseEvent& e, int id)
@@ -74,9 +75,6 @@ namespace wip
 
                                       
             update_border(id);
-            // for some reason this is needed to force rendering change on clicked() event
-            data.image->disable();
-            data.image->enable();
 
         }
         
@@ -105,11 +103,15 @@ namespace wip
             }
             else
             {
-                Wt::WBorder border(Wt::WBorder::Solid, Wt::WBorder::Medium, Wt::WColor(255*(1-frac_rx), 255*frac_rx, 0)
-);
+                Wt::WBorder border(Wt::WBorder::Solid, Wt::WBorder::Medium, Wt::WColor(255*(1-frac_rx), 255*frac_rx, 0));
                 style.setBorder(border);
                 image->setDecorationStyle(style);
             }
+
+            // for some reason needs to be done to display border change
+            data.image->disable();
+            data.image->enable();
+
         }
         
         
@@ -171,8 +173,8 @@ namespace wip
                                 [=]() { wt_app_->handle_received_status(status); });
                         });
 
-                intervehicle().subscribe_dynamic<goby::moos::protobuf::NodeStatus>(
-                        [this](const goby::moos::protobuf::NodeStatus& status)
+                intervehicle().subscribe_dynamic<wip::protobuf::GPSPosition>(
+                        [this](const wip::protobuf::GPSPosition& status)
                         {
                             wt_app_->post_to_wt(
                                 [=]() { wt_app_->handle_received_veh_status(status); });

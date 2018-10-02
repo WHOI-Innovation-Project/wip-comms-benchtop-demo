@@ -19,9 +19,9 @@
 
 #include "cgsn-mooring/serial/ascii_line_based_serial.h"
 #include "wip-comms/messages/groups.h"
+#include "wip-comms/messages/gps.pb.h"
 #include "wip-comms/config/gps_config.pb.h"
 #include "goby/util/linebasedcomms/nmea_sentence.h"
-#include "goby/moos/protobuf/node_status.pb.h"
 #include "goby/util/geodesy.h"
 
 using AppBase = goby::MultiThreadApplication<wip::protobuf::GPSDriverConfig>;
@@ -71,7 +71,8 @@ void GPSDriver::parse(const cgsn::protobuf::SensorRaw& raw)
         {
             glog.is_verbose() && glog << "[Parser]: Parsing RMC: " << raw.raw_data() << std::flush;
 
-            goby::moos::protobuf::NodeStatus node_status;
+            
+            wip::protobuf::GPSPosition position;
             
             enum RMCFields {
                 TALKER = 0,
@@ -91,43 +92,28 @@ void GPSDriver::parse(const cgsn::protobuf::SensorRaw& raw)
             if(nmea.size() < RMC_SIZE)
                 throw(goby::util::bad_nmea_sentence("Message too short"));
             
-            node_status.set_time_with_units(nmea_time_to_microseconds(nmea.as<float>(UTC), nmea.as<int>(UT_DATE)));
+            position.set_time_with_units(nmea_time_to_microseconds(nmea.as<float>(UTC), nmea.as<int>(UT_DATE)));
 
             bool fix_valid = nmea.as<char>(VALIDITY) == 'A';
-
+            position.set_fix_valid(fix_valid);
+            
             if(fix_valid)
             {
-                auto* global = node_status.mutable_global_fix();
-                global->set_lat_with_units(nmea_geo_to_degrees(nmea.as<double>(LAT), nmea.as<char>(LAT_HEMI)));
-                global->set_lon_with_units(nmea_geo_to_degrees(nmea.as<double>(LON), nmea.as<char>(LON_HEMI)));
+                position.set_latitude_with_units(nmea_geo_to_degrees(nmea.as<double>(LAT), nmea.as<char>(LAT_HEMI)));
+                position.set_longitude_with_units(nmea_geo_to_degrees(nmea.as<double>(LON), nmea.as<char>(LON_HEMI)));
             }
-
-            node_status.set_modem_id(cfg().modem_id());
             
             
-            node_status.set_speed(0);
-            auto* pose = node_status.mutable_pose();
-            pose->set_roll(0);
-            pose->set_pitch(0);
-            pose->set_heading(0);
+            glog.is_debug1() && glog << "[Parser]: Parsed message is: " << position.ShortDebugString() << std::endl;
 
-            
-            
-            auto* local = node_status.mutable_local_fix();
-
-            auto xy = geodesy_.convert({ node_status.global_fix().lat_with_units(), node_status.global_fix().lon_with_units() });
-            local->set_x_with_units(xy.x);
-            local->set_y_with_units(xy.y);
-            glog.is_debug1() && glog << "[Parser]: Parsed message is: " << node_status.ShortDebugString() << std::endl;
-
-            if(static_cast<int>(node_status.time()) % cfg().intervehicle_period() == 0)
+            if(static_cast<int>(position.time()) % cfg().intervehicle_period() == 0)
             {
                 glog.is_debug1() && glog << "Publishing intervehicle" << std::endl;
-                intervehicle().publish<wip::groups::gps::data>(node_status);
+                intervehicle().publish<wip::groups::gps::data>(position);
             }
             else
             {
-                interprocess().publish<wip::groups::gps::data>(node_status);
+                interprocess().publish<wip::groups::gps::data>(position);
             }
         }
         else

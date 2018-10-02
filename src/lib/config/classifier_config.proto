@@ -1,12 +1,10 @@
 import "goby/common/protobuf/app3.proto";
 import "goby/middleware/protobuf/interprocess_config.proto";
 
-message BasicMultithreadPubSubConfig
-{
-    // required parameters for ApplicationBase3 class
-    optional goby.protobuf.App3Config app = 1;
-    // required parameters for connecting to 'gobyd'
-    optional goby.protobuf.InterProcessPortalConfig interprocess = 2;
+package wip.protobuf;
 
-    optional int32 my_value = 3;
+message ClassifierConfig
+{
+    optional goby.protobuf.App3Config app = 1;
+    optional goby.protobuf.InterProcessPortalConfig interprocess = 2;
 }

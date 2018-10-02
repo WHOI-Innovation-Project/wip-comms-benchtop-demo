@@ -42,6 +42,36 @@ wip::LiaisonImagery::LiaisonImagery(const goby::common::protobuf::LiaisonConfig&
     info_text_(new WText)
 {
 
+    if(imagery_cfg_.has_initial_image_path())
+    {
+        // post all the images already in the folder
+        boost::filesystem::path initial_path(imagery_cfg_.initial_image_path());
+        std::vector<boost::filesystem::path> initial_path_v;
+
+        std::copy(boost::filesystem::directory_iterator(initial_path),
+                  boost::filesystem::directory_iterator(), std::back_inserter(initial_path_v));
+        std::sort(initial_path_v.begin(), initial_path_v.end());
+  
+        for(auto it = initial_path_v.begin(), end = initial_path_v.end(); it != end; ++it)
+        {
+            std::regex filename_regex(imagery_cfg_.initial_filename_regex());
+            std::smatch match;
+
+            std::regex_search(it->filename().native(), match, filename_regex);
+
+        
+            if(!match.empty())
+            {
+                auto image_id = std::stoi(match[1]);
+                dsl::protobuf::UpdatedImageEvent init_event;
+                init_event.set_image_id(image_id);
+                init_event.set_image_path(it->native());
+                handle_updated_image(init_event);
+            }
+        
+        }        
+    }
+    
     info_panel_->addStyleClass("fixed-left");
     info_panel_->setTitle("Image Information");
     info_panel_->setCentralWidget(info_text_);
@@ -77,7 +107,7 @@ wip::LiaisonImagery::LiaisonImagery(const goby::common::protobuf::LiaisonConfig&
 
 void wip::LiaisonImagery::handle_updated_image(const dsl::protobuf::UpdatedImageEvent& event)
 {
-    //    glog.is_debug1() && glog << "updating image: " << event.ShortDebugString() << std::endl;
+    //glog.is_debug1() && glog << "updating image: " << event.ShortDebugString() << std::endl;
     boost::filesystem::path image(event.image_path());
     
     auto it = images_.find(event.image_id());
@@ -109,12 +139,13 @@ void wip::LiaisonImagery::handle_received_status(const dsl::protobuf::ReceivedSt
         auto it = images_.find(image_rx.image_id());
         if(it != images_.end())
         {
+            
             // only update if changed
             if(!it->second.last_status.IsInitialized() || it->second.last_status.SerializeAsString() != image_rx.SerializeAsString())
             {
                 it->second.last_status = image_rx;
                 update_border(image_rx.image_id());
-                
+
                 if(image_rx.image_id() == active_id)
                     update_info(Wt::WMouseEvent(), image_rx.image_id());
             }
@@ -122,7 +153,7 @@ void wip::LiaisonImagery::handle_received_status(const dsl::protobuf::ReceivedSt
     }
 }
 
-void wip::LiaisonImagery::handle_received_veh_status(const goby::moos::protobuf::NodeStatus& status)
+void wip::LiaisonImagery::handle_received_veh_status(const wip::protobuf::GPSPosition& status)
 {
     glog.is_debug1() && glog << "Received status: " << status.ShortDebugString() << std::endl;
     status_text_->setText("<pre>" + status.DebugString() + "</pre>");

@@ -4,10 +4,10 @@ package wip.protobuf;
 
 message GPSPosition
 {
-    option (dccl.msg) = { unit_system: "si" };
+    option (dccl.msg) = { id: 125  max_bytes: 32 codec_version: 3 unit_system: "si" };
     // time from the $GPRMC in microseconds since UNIX
     required int64 time = 1 [(dccl.field) = { units { prefix: "micro" base_dimensions: "T" } codec: "dccl.time2" }]; 
     optional bool fix_valid = 3;
-    optional double latitude = 4 [(dccl.field) = { units { derived_dimensions: "plane_angle" system: "angle::degree" }}];
-    optional double longitude = 5 [(dccl.field) = { units { derived_dimensions: "plane_angle" system: "angle::degree" }}];
+    optional double latitude = 4 [(dccl.field) = { min: -90 max: 90 precision: 6 units { derived_dimensions: "plane_angle" system: "angle::degree" }}];
+    optional double longitude = 5 [(dccl.field) = { min: -180 max: 180 precision: 6 units { derived_dimensions: "plane_angle" system: "angle::degree" }}];
 }
