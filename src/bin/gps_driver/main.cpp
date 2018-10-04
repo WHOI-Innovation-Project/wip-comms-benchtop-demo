@@ -31,8 +31,8 @@ class GPSDriver : public AppBase
 {
 public:
     GPSDriver() :
-        AppBase(),
-        geodesy_({ cfg().origin().lat_with_units(), cfg().origin().lon_with_units() })
+        AppBase()
+//        geodesy_({ cfg().origin().lat_with_units(), cfg().origin().lon_with_units() })
         {
             interprocess().subscribe<wip::groups::gps::raw_in, cgsn::protobuf::SensorRaw>(
                 [this](const cgsn::protobuf::SensorRaw& raw)
@@ -54,7 +54,7 @@ private:
     Quantity_of_Degrees nmea_geo_to_degrees(double nmea_geo, char hemi);
 
 private:
-    goby::util::UTMGeodesy geodesy_;
+//    goby::util::UTMGeodesy geodesy_;
 };
 
 

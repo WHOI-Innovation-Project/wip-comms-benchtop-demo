@@ -18,5 +18,5 @@ message GPSDriverConfig
     
     optional int32 intervehicle_period = 11 [default = 30];
 
-    required GeoOrigin origin = 20;
+//    required GeoOrigin origin = 20;
 }
