@@ -8,9 +8,11 @@ message ImagesAttributes
 
     message ImageAttributes
     {
-        required int32 xsiz = 1 [(dccl.field) = { min: 0 max: 2000 }]; // todo: check bounds (xsiz and ysiz) for IFCB
-        required int32 ysiz = 2 [(dccl.field) = { min: 0 max: 2000 }];
-        required int32 dccl_encoded_bytes = 3 [(dccl.field) = { min: 0 max: 100000 precision: -2 }]; // check bounds
+        required int32 image_id = 1 [(dccl.field) = { min: 0 max: 10000 }];
+        
+        required int32 xsiz = 2 [(dccl.field) = { min: 0 max: 2000 }]; // todo: check bounds (xsiz and ysiz) for IFCB
+        required int32 ysiz = 3 [(dccl.field) = { min: 0 max: 2000 }];
+        required int32 dccl_encoded_bytes = 4 [(dccl.field) = { min: 0 max: 100000 precision: -2 }]; // check bounds
     }
 
     repeated ImageAttributes attribute = 1 [(dccl.field).max_repeat = 10];

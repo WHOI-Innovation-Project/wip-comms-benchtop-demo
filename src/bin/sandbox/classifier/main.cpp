@@ -19,8 +19,12 @@
 
 #include "goby/middleware/single-thread-application.h"
 
+#include "progressive_imagery/goby/groups.h"
+#include "progressive_imagery/progressive_imagery.pb.h"
+
 #include "wip-comms/messages/groups.h"
 #include "wip-comms/config/classifier_config.pb.h"
+#include "wip-comms/messages/image_attributes.pb.h"
 
 using AppBase = goby::SingleThreadApplication<wip::protobuf::ClassifierConfig>;
 using goby::glog;
@@ -31,7 +35,36 @@ public:
     Classifier() :
         AppBase()
         {
+            interprocess().subscribe<dsl::progressive_imagery::groups::encode_report,
+                                     dsl::protobuf::EncodeReport>(
+                [this](const dsl::protobuf::EncodeReport& enc_report)
+                {
+                    
+                    auto& attribute = *current_attributes_.add_attribute();
+                    attribute.set_image_id(enc_report.encoded_header().image_id());
+                    attribute.set_xsiz(enc_report.encoded_header().siz().xsiz());
+                    attribute.set_ysiz(enc_report.encoded_header().siz().ysiz());
+                    attribute.set_dccl_encoded_bytes(enc_report.dccl_encoded_bytes());
+
+                    if(current_attributes_.attribute_size() == num_images_per_attribute_msg)
+                    {
+                        glog.is_debug1() && glog << current_attributes_.DebugString() << std::endl;
+
+                        //interprocess().publish<>(current_attributes_);
+                        current_attributes_.Clear();
+                    }
+                    
+                }
+                );
         }
+private:
+    wip::protobuf::ImagesAttributes current_attributes_;
+    
+    const int num_images_per_attribute_msg { static_cast<int>(wip::protobuf::ImagesAttributes::descriptor()->FindFieldByName("attribute")->options().GetExtension(dccl::field).max_repeat()) };
+    
+    
+    
+            
         
 };
 
