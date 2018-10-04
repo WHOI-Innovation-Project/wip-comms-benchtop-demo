@@ -7,4 +7,9 @@ message EnvironmentalDriverConfig
 {
     optional goby.protobuf.App3Config app = 1;
     optional goby.protobuf.InterProcessPortalConfig interprocess = 2;
+
+    optional string i2c_dev = 10 [default = "/dev/i2c-0"];
+    optional int32 humidistat_addr = 11 [default = 0x40];
+
+    optional int32 intervehicle_period = 20 [default = 30];
 }

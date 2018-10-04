@@ -12,6 +12,7 @@ message EnvironmentalData
     required int64 time = 1 [(dccl.field) = { units { prefix: "micro" base_dimensions: "T" } codec: "dccl.time2" }];
 
     required double humidity = 2 [(dccl.field) = { min: 0 max: 100 precision: 0 } ];
-    required double temp = 3 [(dccl.field) = { units { derived_dimensions: "temperature"
+    required double temp = 3 [(dccl.field) = { min: 0 max: 100 precision: 0
+					       units { derived_dimensions: "temperature"
                                                        system: "celsius"}}];
 }

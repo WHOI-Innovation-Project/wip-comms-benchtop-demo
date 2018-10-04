@@ -6,7 +6,7 @@ Wants=sys-devices-virtual-net-tun0.device
 [Service]
 Type=simple
 User=gobysoft
-WorkingDirectory=/home/gobysoft/wip-comms-benchtop-demo/config
+WorkingDirectory=/home/gobysoft/wip-comms-benchtop-demo/config/hwil
 ExecStart=/usr/bin/gobyd gobyd-veh1.pb.cfg
 
 [Install]

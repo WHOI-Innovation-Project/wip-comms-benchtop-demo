@@ -35,7 +35,11 @@ namespace wip
             constexpr goby::Group raw_out{"wip::gps::raw_out"};
             constexpr goby::Group data{"wip::gps"};
         }
-        
+
+        namespace env
+        {
+	     constexpr goby::Group data{"wip::env"};
+        }
     }
 }
 
