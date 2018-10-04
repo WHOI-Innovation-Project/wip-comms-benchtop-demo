@@ -1,0 +1,17 @@
+import "dccl/protobuf/option_extensions.proto";
+
+package wip.protobuf;
+
+message EnvironmentalData
+{
+    option (dccl.msg) = { id: 126
+                          max_bytes: 32
+                          codec_version: 3
+                          unit_system: "si" };
+    
+    required int64 time = 1 [(dccl.field) = { units { prefix: "micro" base_dimensions: "T" } codec: "dccl.time2" }];
+
+    required double humidity = 2 [(dccl.field) = { min: 0 max: 100 precision: 0 } ];
+    required double temp = 3 [(dccl.field) = { units { derived_dimensions: "temperature"
+                                                       system: "celsius"}}];
+}

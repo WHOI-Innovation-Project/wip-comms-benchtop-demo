@@ -5,4 +5,4 @@ if(build_sandbox)
 endif()
 
 add_subdirectory(gps_driver)
-
+add_subdirectory(environmental_driver)

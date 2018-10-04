@@ -1,5 +1,6 @@
 protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${project_INC_DIR}/wip-comms/config
   gps_config.proto
+  environmental_driver_config.proto
   liaison_config.proto
   geo_origin.proto
   classifier_config.proto

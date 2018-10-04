@@ -1,5 +1,6 @@
 protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${project_INC_DIR}/wip-comms/messages
   gps.proto
+  environmental.proto
   status.proto
   image_attributes.proto
   )
