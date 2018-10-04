@@ -106,7 +106,8 @@ void GPSDriver::parse(const cgsn::protobuf::SensorRaw& raw)
             
             glog.is_debug1() && glog << "[Parser]: Parsed message is: " << position.ShortDebugString() << std::endl;
 
-            if(static_cast<int>(position.time()) % cfg().intervehicle_period() == 0)
+            double secs = position.time_with_units<goby::time::SITime>()/boost::units::si::seconds;
+            if(static_cast<int>(secs) % cfg().intervehicle_period() == 0)
             {
                 glog.is_debug1() && glog << "Publishing intervehicle" << std::endl;
                 intervehicle().publish<wip::groups::gps::data>(position);
