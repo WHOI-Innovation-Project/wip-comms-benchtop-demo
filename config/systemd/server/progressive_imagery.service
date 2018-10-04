@@ -6,7 +6,7 @@ BindsTo=gobyd.service
 [Service]
 Type=simple
 User=gobysoft
-WorkingDirectory=/home/gobysoft/wip-comms-benchtop-demo/config
+WorkingDirectory=/home/gobysoft/wip-comms-benchtop-demo/config/hwil
 ExecStartPre=/bin/bash -c "/bin/rm -rf /tmp/imgin; /bin/mkdir /tmp/imgin; sleep 1"
 ExecStart=/home/gobysoft/progressive-imagery/build/src/goby/progressive_imagery_g dpi-operator.pb.cfg
 
