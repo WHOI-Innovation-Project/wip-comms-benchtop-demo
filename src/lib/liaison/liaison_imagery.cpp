@@ -21,6 +21,7 @@
 
 #include <Wt/WPanel>
 
+#include <boost/units/io.hpp>
 #include <boost/filesystem.hpp>
 
 #include "liaison_imagery.h"
@@ -34,6 +35,7 @@ wip::LiaisonImagery::LiaisonImagery(const goby::common::protobuf::LiaisonConfig&
     control_container_(new Wt::WGroupBox("Control", this)),
     status_container_(new Wt::WGroupBox("Status", this)),
     status_text_(new Wt::WText(status_container_)),
+    env_text_(new Wt::WText(status_container_)),
     request_text_(new Wt::WText("Fraction requested: ", control_container_)),
     request_frac_(new Wt::WDoubleSpinBox(control_container_)),
     request_button_(new Wt::WPushButton("Request", control_container_)),
@@ -156,5 +158,27 @@ void wip::LiaisonImagery::handle_received_status(const dsl::protobuf::ReceivedSt
 void wip::LiaisonImagery::handle_received_veh_status(const wip::protobuf::GPSPosition& status)
 {
     glog.is_debug1() && glog << "Received status: " << status.ShortDebugString() << std::endl;
-    status_text_->setText("<pre>" + status.DebugString() + "</pre>");
+
+    
+    std::stringstream ss;
+    ss <<  wip::protobuf::GPSPosition::descriptor()->full_name() << ":\n"
+       << "Time: " << goby::time::to_ptime(status.time_with_units()) << "\n"
+       << "fix_valid: " << std::boolalpha << status.fix_valid() << "\n"
+       << "latitude: " << std::setprecision(std::numeric_limits<double>::digits10) << status.latitude_with_units() << "\n"
+       << "longitude: " << std::setprecision(std::numeric_limits<double>::digits10) <<  status.longitude_with_units();
+    
+    status_text_->setText("<pre>" + ss.str() + "</pre>");
+}
+
+void wip::LiaisonImagery::handle_received_env_data(const wip::protobuf::EnvironmentalData& env_data)
+{
+    glog.is_debug1() && glog << "Received env data: " << env_data.ShortDebugString() << std::endl;
+
+    std::stringstream ss;
+    ss << wip::protobuf::EnvironmentalData::descriptor()->full_name() << ":\n"
+       << "Time: " << goby::time::to_ptime(env_data.time_with_units()) << "\n"
+       << "Humidity: " << env_data.humidity() << "%" << "\n"
+       << "Temperature: " << env_data.temp_with_units();
+    
+    env_text_->setText("<pre>" + ss.str() + "</pre>");
 }

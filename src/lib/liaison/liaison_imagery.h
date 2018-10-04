@@ -33,6 +33,7 @@
 #include "wip-comms/config/liaison_config.pb.h"
 #include "wip-comms/messages/groups.h"
 #include "wip-comms/messages/gps.pb.h"
+#include "wip-comms/messages/environmental.pb.h"
 
 #include "goby/middleware/liaison/liaison_container.h"
 #include "goby/middleware/multi-thread-application.h"
@@ -54,7 +55,8 @@ namespace wip
         void handle_updated_image(const dsl::protobuf::UpdatedImageEvent& event);
         void handle_received_status(const dsl::protobuf::ReceivedStatus& status);
         void handle_received_veh_status(const wip::protobuf::GPSPosition& status);
-
+        void handle_received_env_data(const wip::protobuf::EnvironmentalData& env_data);
+        
     private:
         void toggle_selection(const Wt::WMouseEvent& e, int id)
         {            
@@ -127,6 +129,7 @@ namespace wip
         
         Wt::WGroupBox* status_container_;
         Wt::WText* status_text_;
+        Wt::WText* env_text_;
 
         Wt::WGroupBox* image_container_;
 
@@ -179,6 +182,14 @@ namespace wip
                             wt_app_->post_to_wt(
                                 [=]() { wt_app_->handle_received_veh_status(status); });
                         });
+
+                intervehicle().subscribe_dynamic<wip::protobuf::EnvironmentalData>(
+                        [this](const wip::protobuf::EnvironmentalData& env_data)
+                        {
+                            wt_app_->post_to_wt(
+                                [=]() { wt_app_->handle_received_env_data(env_data); });
+                        });
+
                 
                 
             }
