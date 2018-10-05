@@ -90,7 +90,8 @@ public:
                                 classified_.pop_front();
                                 new_action->set_fraction_goal(cfg().fraction_goal());
                             }
-                            interprocess().publish<dsl::progressive_imagery::groups::queue_action>(actions);
+                            if(actions.queue_action_size() > 0)
+                                interprocess().publish<dsl::progressive_imagery::groups::queue_action>(actions);
                         }
                                 
                     });
