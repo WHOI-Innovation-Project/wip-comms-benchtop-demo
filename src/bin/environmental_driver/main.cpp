@@ -44,75 +44,75 @@ public:
     EnvironmentalDriver() :
         AppBase(1*boost::units::si::hertz)
         {
-          i2c_file_ = open(cfg().i2c_dev().c_str(), O_RDWR); 
-          const int addr = cfg().humidistat_addr();
-          if (ioctl(i2c_file_, I2C_SLAVE, addr) < 0) 
-          {
-            glog.is_die() && glog << "Failure setting addr: " << addr << std::endl;
-          }
+            i2c_file_ = open(cfg().i2c_dev().c_str(), O_RDWR); 
+            const int addr = cfg().humidistat_addr();
+            if (ioctl(i2c_file_, I2C_SLAVE, addr) < 0) 
+            {
+                glog.is_die() && glog << "Failure setting addr: " << addr << std::endl;
+            }
         }
 private:
     void loop() override
-    {
-        wip::protobuf::EnvironmentalData env_data;
-	env_data.set_time_with_units(goby::time::now());
-        { 
-          std::uint8_t reg = 0xE5; // Measure relative humidity (hold master mode)
-          std::int16_t res = 0;
+        {
+            wip::protobuf::EnvironmentalData env_data;
+            env_data.set_time_with_units(goby::time::now());
+            { 
+                std::uint8_t reg = 0xE5; // Measure relative humidity (hold master mode)
+                std::int16_t res = 0;
 
-          char buf[10];
-          buf[0] = reg;
-          write(i2c_file_, buf, 1);
+                char buf[10];
+                buf[0] = reg;
+                write(i2c_file_, buf, 1);
 
 
-          int read_res = read(i2c_file_, buf, 2);
-          while(read_res != 2) {
-             usleep(1000);
-             read_res = read(i2c_file_, buf, 2);
-          } 
+                int read_res = read(i2c_file_, buf, 2);
+                while(read_res != 2) {
+                    usleep(1000);
+                    read_res = read(i2c_file_, buf, 2);
+                } 
 
-          res |= buf[1];
-          res |= (buf[0] << 8);
+                res |= buf[1];
+                res |= (buf[0] << 8);
    
-          glog.is_debug1() && glog << std::hex << res << std::endl;
-          auto rel_humidity = ((125.0*res)/65536)-6;
-          glog.is_debug1() && glog << "Relativity Humidity (%): " << rel_humidity << std::endl;
-          env_data.set_humidity(rel_humidity);
-        }
+                glog.is_debug1() && glog << std::hex << res << std::endl;
+                auto rel_humidity = ((125.0*res)/65536)-6;
+                glog.is_debug1() && glog << "Relativity Humidity (%): " << rel_humidity << std::endl;
+                env_data.set_humidity(rel_humidity);
+            }
 
-        {
-          std::uint8_t reg = 0xE3; // Measure temp (hold master mode)
-          std::int16_t res = 0;
+            {
+                std::uint8_t reg = 0xE3; // Measure temp (hold master mode)
+                std::int16_t res = 0;
 
-          char buf[10];
-          buf[0] = reg;
-          write(i2c_file_, buf, 1);
+                char buf[10];
+                buf[0] = reg;
+                write(i2c_file_, buf, 1);
 
-          int read_res = read(i2c_file_, buf, 2);
-          while(read_res != 2) {
-             usleep(1000);
-             read_res = read(i2c_file_, buf, 2);
-          } 
+                int read_res = read(i2c_file_, buf, 2);
+                while(read_res != 2) {
+                    usleep(1000);
+                    read_res = read(i2c_file_, buf, 2);
+                } 
 
-          res |= buf[1];
-          res |= (buf[0] << 8);
+                res |= buf[1];
+                res |= (buf[0] << 8);
    
-          glog.is_debug1() && glog << std::hex << res << std::endl;
-          auto temp((((175.72*res)/65536)-46.85)*boost::units::absolute<boost::units::celsius::temperature>());
-          glog.is_debug1() && glog << "Temp (deg C): " << temp << std::endl;
-          env_data.set_temp_with_units(temp);
+                glog.is_debug1() && glog << std::hex << res << std::endl;
+                auto temp((((175.72*res)/65536)-46.85)*boost::units::absolute<boost::units::celsius::temperature>());
+                glog.is_debug1() && glog << "Temp (deg C): " << temp << std::endl;
+                env_data.set_temp_with_units(temp);
+            }
+            double secs = env_data.time_with_units<goby::time::SITime>()/boost::units::si::seconds;
+            if(static_cast<int>(secs) % cfg().intervehicle_period() == 0)
+            {
+                glog.is_debug1() && glog << "Publishing intervehicle" << std::endl;
+                intervehicle().publish<wip::groups::env::data>(env_data);
+            }
+            else
+            {
+                interprocess().publish<wip::groups::env::data>(env_data);
+            }
         }
-        double secs = env_data.time_with_units<goby::time::SITime>()/boost::units::si::seconds;
-        if(static_cast<int>(secs) % cfg().intervehicle_period() == 0)
-        {
-            glog.is_debug1() && glog << "Publishing intervehicle" << std::endl;
-            intervehicle().publish<wip::groups::env::data>(env_data);
-        }
-        else
-        {
-            interprocess().publish<wip::groups::env::data>(env_data);
-        }
-    }
 private:
     int i2c_file_;
 };

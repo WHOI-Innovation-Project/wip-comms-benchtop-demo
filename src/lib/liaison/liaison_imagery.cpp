@@ -115,23 +115,19 @@ void wip::LiaisonImagery::handle_updated_image(const dsl::protobuf::UpdatedImage
     auto it = images_.find(event.image_id());
     if(it == images_.end())
     {
-        auto c = new WContainerWidget(image_container_);
-        c->setInline(true);
-        c->setPadding(10);
-        auto wimage = new WImage(new WFileResource(image.native()), c);
+        create_image_container(event.image_id());
+        it = images_.find(event.image_id());
+    }
 
-        images_.insert(std::make_pair(event.image_id(), ImageData({ c, wimage })));
-        auto id = event.image_id();
-        
-        wimage->mouseWentOver().connect(boost::bind(&LiaisonImagery::update_info, this, _1, id));
-        wimage->clicked().connect(boost::bind(&LiaisonImagery::toggle_selection, this, _1, id));
+    if(!it->second.image_loaded)
+    {
+        it->second.image = new WImage(new WFileResource(image.native()), it->second.image_container);
+        it->second.image_loaded = true;
     }
     else
     {
         it->second.image->imageLink().resource()->setChanged();
     }
-    
-    
 }
 
 void wip::LiaisonImagery::handle_received_status(const dsl::protobuf::ReceivedStatus& status)
@@ -182,3 +178,41 @@ void wip::LiaisonImagery::handle_received_env_data(const wip::protobuf::Environm
     
     env_text_->setText("<pre>" + ss.str() + "</pre>");
 }
+
+void wip::LiaisonImagery::handle_received_image_attributes(const wip::protobuf::ImagesAttributes& attrs)
+{
+    for(const auto& attr : attrs.attribute())
+    {    
+        auto it = images_.find(attr.image_id());
+        if(it == images_.end())
+        {
+            create_image_container(attr.image_id(), attr.xsiz(), attr.ysiz(), attr.dccl_encoded_bytes());
+        }
+        else
+        {
+            it->second.dccl_encoded_bytes = attr.dccl_encoded_bytes();
+        }
+    }
+    
+
+}
+
+void wip::LiaisonImagery::create_image_container(int image_id, int xsiz, int ysiz, int dccl_encoded_bytes )
+{
+    auto c = new WContainerWidget(image_container_);
+    c->setMargin(10);
+    if(xsiz > 0 && ysiz > 0)
+        c->resize(xsiz, ysiz);
+    c->decorationStyle().setBackgroundColor(Wt::WColor(0, 10, 100));
+    Wt::WApplication::instance()->styleSheet().addRule(".wip-image-span", "display: inline-block;");
+            
+    c->addStyleClass("wip-image-span");
+
+    c->mouseWentOver().connect(boost::bind(&LiaisonImagery::update_info, this, _1, image_id));
+    c->clicked().connect(boost::bind(&LiaisonImagery::toggle_selection, this, _1, image_id));         
+            
+    images_.insert(std::make_pair(image_id, ImageData({ c, nullptr, false, dccl_encoded_bytes })));
+    
+}
+
+

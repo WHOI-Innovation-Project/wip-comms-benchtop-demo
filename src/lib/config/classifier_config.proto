@@ -7,4 +7,8 @@ message ClassifierConfig
 {
     optional goby.protobuf.App3Config app = 1;
     optional goby.protobuf.InterProcessPortalConfig interprocess = 2;
+
+    optional float max_aspect_ratio = 3 [default = 1.5];
+    optional int32 max_size_pixels = 4 [default = 200];
+    optional float fraction_goal = 5 [default = 0.5];
 }

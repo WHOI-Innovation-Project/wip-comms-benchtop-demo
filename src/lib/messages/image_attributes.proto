@@ -4,7 +4,7 @@ package wip.protobuf;
 
 message ImagesAttributes
 {
-    option (dccl.msg) = { id: 125  max_bytes: 64 codec_version: 3 unit_system: "si" };
+    option (dccl.msg) = { id: 127  max_bytes: 64 codec_version: 3 unit_system: "si" };
 
     message ImageAttributes
     {

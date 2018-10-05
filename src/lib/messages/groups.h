@@ -40,6 +40,11 @@ namespace wip
         {
 	     constexpr goby::Group data{"wip::env"};
         }
+
+        namespace image
+        {
+            constexpr goby::Group attributes{"wip::image::attributes"};
+        }
     }
 }
 

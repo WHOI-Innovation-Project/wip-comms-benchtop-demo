@@ -34,6 +34,7 @@
 #include "wip-comms/messages/groups.h"
 #include "wip-comms/messages/gps.pb.h"
 #include "wip-comms/messages/environmental.pb.h"
+#include "wip-comms/messages/image_attributes.pb.h"
 
 #include "goby/middleware/liaison/liaison_container.h"
 #include "goby/middleware/multi-thread-application.h"
@@ -56,6 +57,7 @@ namespace wip
         void handle_received_status(const dsl::protobuf::ReceivedStatus& status);
         void handle_received_veh_status(const wip::protobuf::GPSPosition& status);
         void handle_received_env_data(const wip::protobuf::EnvironmentalData& env_data);
+        void handle_received_image_attributes(const wip::protobuf::ImagesAttributes& attrs);
         
     private:
         void toggle_selection(const Wt::WMouseEvent& e, int id)
@@ -83,7 +85,20 @@ namespace wip
         
         void update_info(const Wt::WMouseEvent& e, int id)
         {
-            info_text_->setText("<pre>" + images_.at(id).last_status.DebugString() + "</pre>");
+            const auto& last_status = images_.at(id).last_status;
+            
+            std::stringstream ss;
+            ss << "image_id: " << id << "\n"
+               << "received: " << last_status.fraction_received()*100 << "%";
+
+            auto dccl_encoded_bytes = images_.at(id).dccl_encoded_bytes;
+            if(dccl_encoded_bytes > 0)
+                ss << " (" << static_cast<int>(last_status.fraction_received()*dccl_encoded_bytes) << "/" << dccl_encoded_bytes << "B)";
+            
+            
+            ss << "\n";
+            
+            info_text_->setText("<pre>" + ss.str() + "</pre>");
             active_id = id;
         }
 
@@ -92,30 +107,28 @@ namespace wip
             
             auto& data = images_.at(id);
             auto frac_rx = data.last_status.fraction_received();
-            auto image = data.image;
-            Wt::WCssDecorationStyle style;
+            auto container = data.image_container;
+            
             
             if(data.selected)
             {
                 Wt::WBorder border(Wt::WBorder::Solid, Wt::WBorder::Medium, Wt::WColor(0, 0, 255));
-                style.setBorder(border);
-
-                image->setDecorationStyle(style);
+                container->decorationStyle().setBorder(border);
 
             }
             else
             {
                 Wt::WBorder border(Wt::WBorder::Solid, Wt::WBorder::Medium, Wt::WColor(255*(1-frac_rx), 255*frac_rx, 0));
-                style.setBorder(border);
-                image->setDecorationStyle(style);
+                container->decorationStyle().setBorder(border);
             }
 
             // for some reason needs to be done to display border change
-            data.image->disable();
-            data.image->enable();
+            container->disable();
+            container->enable();
 
         }
-        
+
+        void create_image_container(int image_id, int xsiz = -1, int ysiz = -1, int dccl_encoded_bytes= -1);
         
     private:
         
@@ -136,7 +149,9 @@ namespace wip
         struct ImageData
         {
             Wt::WContainerWidget* image_container;
-            Wt::WImage* image;
+            Wt::WImage* image { nullptr };
+            bool image_loaded { false };
+            int dccl_encoded_bytes { -1 };
             dsl::protobuf::ImageRxStatus last_status;
             bool selected { false };
         };
@@ -189,7 +204,15 @@ namespace wip
                             wt_app_->post_to_wt(
                                 [=]() { wt_app_->handle_received_env_data(env_data); });
                         });
+                
+                intervehicle().subscribe_dynamic<wip::protobuf::ImagesAttributes>(
+                        [this](const wip::protobuf::ImagesAttributes& attrs)
+                        {
+                            wt_app_->post_to_wt(
+                                [=]() { wt_app_->handle_received_image_attributes(attrs); });
+                        });
 
+                
                 
                 
             }
