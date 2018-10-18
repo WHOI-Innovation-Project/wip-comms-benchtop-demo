@@ -1,8 +1,6 @@
 #!/bin/bash
 
 set -u -e
-set -x
-
 
 if [ "$#" -lt 2 ]; then
     echo "Usage: download_circleci_deb.sh circle_ci_build_num circle_ci_api_token [output_dir, default .]"
