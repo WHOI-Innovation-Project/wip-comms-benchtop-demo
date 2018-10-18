@@ -9,7 +9,7 @@ workflows:
 jobs:
   amd64-build:
     docker:
-      - image: wipcomms/wip-comms-build-base:1.0.0
+      - image: tsaubergine/wip-comms-build-base:1.0.1
     working_directory: /root/wip-comms
     environment:
       - DEBIAN_FRONTEND: "noninteractive"
@@ -17,11 +17,15 @@ jobs:
       - DEBCONF_NOWARNINGS: "yes"
       - DEBFULLNAME: "WIP CircleCI"
       - DEBEMAIL: "toby@gobysoft.org"
+      - PROGRESSIVE_IMAGERY_BUILD_NUM: 38
     steps: 
       - checkout
       - run: &run-update-apt
           name: Update apt packages
           command: apt-get update && apt-get dist-upgrade -y
+      - run: &run-install-progressive-imagery
+          name: Install Progressive Imagery
+          command: cd /root/wip-comms/scripts && ./download_progressive_imagery_circleci_debs.sh $PROGRESSIVE_IMAGERY_BUILD_NUM $PROGRESSIVE_IMAGERY_CIRCLE_TOKEN && dpkg -i progressive_imagery_*.deb
       - run: &run-update-deb
           name: Update the debian source repo
           command: cd /root/debian && git pull
@@ -41,7 +45,7 @@ jobs:
           path: /root/deb
   armhf-build:
     docker: 
-      - image: wipcomms/wip-comms-build-armhf:1.0.0
+      - image: tsaubergine/wip-comms-build-armhf:1.0.1
     working_directory: /root/wip-comms
     environment:
       - DEBIAN_FRONTEND: "noninteractive"
@@ -49,9 +53,11 @@ jobs:
       - DEBCONF_NOWARNINGS: "yes"
       - DEBFULLNAME: "WIP CircleCI"
       - DEBEMAIL: "toby@gobysoft.org"
+      - PROGRESSIVE_IMAGERY_BUILD_NUM: 37
     steps: 
       - checkout
       - run: *run-update-apt
+      - run: *run-install-progressive-imagery
       - run: *run-update-deb
       - run: *run-nest-deb
       - run: *run-dch
