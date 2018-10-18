@@ -33,6 +33,7 @@ protobuf_include_dirs("${GOBY_INCLUDE_DIR}")
 # todo: improve with findpackage
 set(PROGRESSIVE_IMAGERY_PATH /home/gobysoft/progressive-imagery CACHE STRING "PATH to progressive-imagery library")
 include_directories(${PROGRESSIVE_IMAGERY_PATH}/include)
+find_library(PROGRESSIVE_IMAGERY_LIBRARY progressive_imagery ${PROGRESSIVE_IMAGERY_PATH}/build)
 
 find_package(cgsn-mooring REQUIRED)
 get_target_property(CGSN_MOORING_INCLUDE_DIR cgsn_messages INTERFACE_INCLUDE_DIRECTORIES)
