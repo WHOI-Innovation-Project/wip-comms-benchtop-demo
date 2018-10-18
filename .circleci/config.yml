@@ -46,7 +46,7 @@ jobs:
           path: /root/deb
   armhf-build:
     docker: 
-      - image: tsaubergine/wip-comms-build-armhf:1.0.1
+      - image: tsaubergine/wip-comms-build-armhf:1.0.2
     working_directory: /root/wip-comms
     environment:
       - DEBIAN_FRONTEND: "noninteractive"
@@ -59,7 +59,6 @@ jobs:
       - checkout
       - run: *run-update-apt
       - run: *run-install-progressive-imagery
-      - run: apt-get update && apt-get install -y libcgsn-mooring-dev:armhf libi2c-dev:armhf
       - run: *run-update-deb
       - run: *run-nest-deb
       - run: *run-dch
