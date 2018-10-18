@@ -25,7 +25,7 @@ jobs:
           command: apt-get update && apt-get dist-upgrade -y
       - run: &run-install-progressive-imagery
           name: Install Progressive Imagery
-          command: cd /root/wip-comms/scripts && apt-get install curl wget && ./download_progressive_imagery_circleci_debs.sh $PROGRESSIVE_IMAGERY_BUILD_NUM $PROGRESSIVE_IMAGERY_CIRCLE_TOKEN && dpkg -i progressive_imagery_*.deb
+          command: cd /root/wip-comms/scripts && apt-get install curl wget && ./download_progressive_imagery_circleci_debs.sh $PROGRESSIVE_IMAGERY_BUILD_NUM $PROGRESSIVE_IMAGERY_CIRCLE_TOKEN && dpkg -i progressive-imagery_*.deb
       - run: &run-update-deb
           name: Update the debian source repo
           command: cd /root/debian && git pull
