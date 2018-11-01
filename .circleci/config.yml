@@ -59,7 +59,7 @@ jobs:
       - checkout
       - run: *run-update-apt
       - run: *run-install-progressive-imagery
-      - run: apt-get update && apt-get install -y libgoby3-gui-dev libpqxx-dev
+      - run: apt-get update && apt-get install -y libgoby3-gui-dev:armhf libpqxx-dev:armhf
       - run: *run-update-deb
       - run: *run-nest-deb
       - run: *run-dch
