@@ -50,16 +50,18 @@ public:
                         float aspect_ratio = static_cast<float>(attribute.xsiz()) /
                             static_cast<float>(attribute.ysiz());
 
-                        if(aspect_ratio < cfg().max_aspect_ratio() &&
-                           attribute.xsiz() < cfg().max_size_pixels() &&
-                           attribute.ysiz() < cfg().max_size_pixels())
+                        
+                        if(aspect_ratio > cfg().min_aspect_ratio() &&
+                           attribute.xsiz() >= cfg().min_x_size_pixels() &&
+                           attribute.ysiz() >= cfg().min_y_size_pixels())
                         {
                             classified_.push_back(attribute.image_id());
+                            glog.is_debug1() && glog << "Classified: " << attribute.image_id() << std::endl;
                         } 
                         
                         if(current_attributes_.attribute_size() == num_images_per_attribute_msg)
                         {
-                            glog.is_debug1() && glog << current_attributes_.DebugString() << std::endl;
+                            glog.is_debug2() && glog << current_attributes_.DebugString() << std::endl;
 
                             intervehicle().publish<wip::groups::image::attributes>(current_attributes_);
                             current_attributes_.Clear();

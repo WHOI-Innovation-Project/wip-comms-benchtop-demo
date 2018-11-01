@@ -43,7 +43,7 @@ public:
                 std::string query = "create table if not exists " + cfg().progress_table() +
                     " ( image_id int unique, fraction_acked real, retrieved boolean default false ) ";
 
-                glog.is_debug1() && glog << query << std::endl;
+                glog.is_debug2() && glog << query << std::endl;
                 pqxx::work t(connection_);
                 t.exec(query);
                 t.commit();
@@ -52,7 +52,7 @@ public:
             // reset all image retrieval upon reboot
             {
                 std::string query = "update " + cfg().progress_table() + " set retrieved = false";
-                glog.is_debug1() && glog << query << std::endl;
+                glog.is_debug2() && glog << query << std::endl;
                 pqxx::work t(connection_);
                 t.exec(query);
                 t.commit();
@@ -113,14 +113,17 @@ private:
                 "where (" +
                 "(" + pt + ".fraction_acked < " + std::to_string(cfg().pass1_fraction()) + " or " + pt + ".fraction_acked is null) and " +
                 "(" + pt + ".retrieved = false or " + pt + ".retrieved is null) and " +
-                "(" + dt + ".x < " + xmin + " or " + dt + ".y < " + ymin + ") " + 
+                "(" + dt + ".xsiz > " + xmin + " and " + dt + ".ysiz > " + ymin + ") " + 
                 ") " + 
                 "order by ifcb.image_id asc limit " + std::to_string(cfg().max_images_per_query());
             select_query += select_body;
             
-            glog.is_debug1() && glog << select_query << std::endl;
+            glog.is_debug2() && glog << select_query << std::endl;
             pqxx::work t(connection_);
             auto result = t.exec(select_query);
+
+            if(result.size() > 0)
+                glog.is_debug1() && glog << "Received " << result.size() << " rows" << std::endl;
             
             for(auto row : result)
             {
