@@ -1,13 +1,15 @@
 [Unit]
-Description=WIP Environmental Driver
+Description=WIP IFCB database interface
 After=gobyd.service
 BindsTo=gobyd.service
+After=postgresql.service
+
 
 [Service]
 Type=simple
-User=root
+User=gobysoft
 WorkingDirectory=/home/gobysoft/wip-comms-benchtop-demo/config/hwil
-ExecStart=/usr/bin/wip_comms_environmental_driver environmental-veh1.pb.cfg
+ExecStart=/usr/bin/wip_comms_ifcb_database_interface db-veh1.pb.cfg
 
 [Install]
 WantedBy=gobyd.service

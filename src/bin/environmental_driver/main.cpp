@@ -42,7 +42,7 @@ class EnvironmentalDriver : public AppBase
 {
 public:
     EnvironmentalDriver() :
-        AppBase(1*boost::units::si::hertz)
+        AppBase(cfg().read_freq()*boost::units::si::hertz)
         {
             i2c_file_ = open(cfg().i2c_dev().c_str(), O_RDWR); 
             const int addr = cfg().humidistat_addr();

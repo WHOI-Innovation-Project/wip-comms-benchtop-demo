@@ -10,6 +10,9 @@ message EnvironmentalDriverConfig
 
     optional string i2c_dev = 10 [default = "/dev/i2c-0"];
     optional int32 humidistat_addr = 11 [default = 0x40];
+    optional int32 accelerometer_addr = 12 [default = 0x1e];
+
+    optional int32 read_freq = 15 [ default = 10 ];
 
     optional int32 intervehicle_period = 20 [default = 30];
 }

@@ -7,8 +7,8 @@ BindsTo=gobyd.service
 Type=simple
 User=gobysoft
 WorkingDirectory=/home/gobysoft/wip-comms-benchtop-demo/config/hwil
-ExecStartPre=/bin/bash -c "/bin/rm -rf /tmp/imgin; /bin/mkdir /tmp/imgin; sleep 1"
-ExecStart=/home/gobysoft/progressive-imagery/build/src/goby/progressive_imagery_g dpi-veh1.pb.cfg
+ExecStartPre=/bin/bash -c "/bin/rm -rf /media/data/imgout; /bin/mkdir /media/data/imgout; sleep 1"
+ExecStart=/usr/bin/progressive_imagery_g dpi-veh1.pb.cfg
 
 [Install]
 WantedBy=gobyd.service
