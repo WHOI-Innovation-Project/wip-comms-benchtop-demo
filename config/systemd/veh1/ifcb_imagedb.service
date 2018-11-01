@@ -1,0 +1,15 @@
+[Unit]
+Description=IFCB raw to Postgres converter
+After=gobyd.service
+BindsTo=gobyd.service
+After=postgresql.service
+
+[Service]
+User=gobysoft
+Restart=always
+RestartSec=300s
+WorkingDirectory=/home/gobysoft/wip-comms-ifcb-imagedb
+ExecStart=/usr/bin/python3 ifcb_db.py
+
+[Install]
+WantedBy=gobyd.service
