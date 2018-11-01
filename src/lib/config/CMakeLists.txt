@@ -3,7 +3,8 @@ protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${project_INC_DIR}/wip-comms/config
   environmental_driver_config.proto
   liaison_config.proto
   geo_origin.proto
-  classifier_config.proto
+  classifier_config.proto 
+  ifcb_database_config.proto
   )
 
 add_library(wip_comms_config SHARED ${PROTO_SRCS} ${PROTO_HDRS})

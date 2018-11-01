@@ -1,0 +1,24 @@
+import "goby/common/protobuf/app3.proto";
+import "goby/middleware/protobuf/interprocess_config.proto";
+
+package wip.protobuf;
+
+message IFCBDatabaseConfig
+{
+    optional goby.protobuf.App3Config app = 1;
+    optional goby.protobuf.InterProcessPortalConfig interprocess = 2;
+
+    required string ifcb_database = 10;
+    optional string ifcb_data_table = 11 [default = "ifcb"];
+    optional string progress_table = 12 [default = "progress"];
+    optional string user = 13 [default = "wipcomms"];
+    required string password = 14;
+    optional string host = 15 [default = "127.0.0.1"];
+    optional int32 port = 16 [default = 5432];
+
+    optional int32 max_images_per_query = 20 [default = 10];
+    optional string img_out_dir = 21 [default = "/media/data/img_out"];
+
+    optional float pass1_fraction = 25 [default = 0.05];
+    
+}
