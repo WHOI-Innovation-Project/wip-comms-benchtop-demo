@@ -7,7 +7,7 @@ Wants=network-online.target
 Type=simple
 User=gobysoft
 WorkingDirectory=/home/gobysoft/wip-comms-benchtop-demo/config/hwil
-ExecStart=/home/gobysoft/goby3/bin/gobyd gobyd-operator.pb.cfg
+ExecStart=/usr/bin/gobyd gobyd-operator.pb.cfg
 
 [Install]
 WantedBy=multi-user.target

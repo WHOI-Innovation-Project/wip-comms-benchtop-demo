@@ -1,0 +1,12 @@
+[Unit]
+Description=Goby Logger
+After=gobyd.service
+BindsTo=gobyd.service
+
+[Service]
+Type=simple
+User=gobysoft
+ExecStart=/usr/bin/goby_logger --log_dir /home/gobysoft/logs --interprocess 'platform: "wip-comms-demo-operator"'
+
+[Install]
+WantedBy=gobyd.service
