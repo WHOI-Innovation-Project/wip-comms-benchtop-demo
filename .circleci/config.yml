@@ -17,7 +17,7 @@ jobs:
       - DEBCONF_NOWARNINGS: "yes"
       - DEBFULLNAME: "WIP CircleCI"
       - DEBEMAIL: "toby@gobysoft.org"
-      - PROGRESSIVE_IMAGERY_BUILD_NUM: 45
+      - PROGRESSIVE_IMAGERY_BUILD_NUM: 46
     steps: 
       - checkout
       - run: &run-update-apt
@@ -54,7 +54,7 @@ jobs:
       - DEBCONF_NOWARNINGS: "yes"
       - DEBFULLNAME: "WIP CircleCI"
       - DEBEMAIL: "toby@gobysoft.org"
-      - PROGRESSIVE_IMAGERY_BUILD_NUM: 37
+      - PROGRESSIVE_IMAGERY_BUILD_NUM: 45
     steps: 
       - checkout
       - run: *run-update-apt
