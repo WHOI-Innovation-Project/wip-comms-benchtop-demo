@@ -20,5 +20,9 @@ message IFCBDatabaseConfig
     optional string img_out_dir = 21 [default = "/media/data/img_out"];
 
     optional float pass1_fraction = 25 [default = 0.05];
+
+    // don't pull out images smaller than this
+    optional int32 min_x_pixels = 30 [default = 0];
+    optional int32 min_y_pixels = 31 [default = 0];
     
 }

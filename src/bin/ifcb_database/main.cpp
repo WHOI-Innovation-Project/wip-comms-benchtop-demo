@@ -103,11 +103,18 @@ private:
             auto dt = cfg().ifcb_data_table();
             auto pt = cfg().progress_table();
 
+            auto xmin = std::to_string(cfg().min_x_pixels());
+            auto ymin = std::to_string(cfg().min_y_pixels());
+            
             // return the next N images that have not been transmitted to the threshold
             std::string select_query = "select " + dt + ".image_id," + dt + ".image from " + dt + " ";
             std::string select_body = "left join " + pt + " " +
                 "on " + dt + ".image_id = " + pt + ".image_id " +
-                "where ((" + pt + ".fraction_acked < " + std::to_string(cfg().pass1_fraction()) + " or " + pt + ".fraction_acked is null) and (" + pt + ".retrieved = false or " + pt + ".retrieved is null)) " + 
+                "where (" +
+                "(" + pt + ".fraction_acked < " + std::to_string(cfg().pass1_fraction()) + " or " + pt + ".fraction_acked is null) and " +
+                "(" + pt + ".retrieved = false or " + pt + ".retrieved is null) and " +
+                "(" + dt + ".x < " + xmin + " or " + dt + ".y < " + ymin + ") " + 
+                ") " + 
                 "order by ifcb.image_id asc limit " + std::to_string(cfg().max_images_per_query());
             select_query += select_body;
             
