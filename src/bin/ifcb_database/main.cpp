@@ -129,7 +129,6 @@ private:
             {
                 auto id = row["image_id"].as<int>();
                 pqxx::binarystring image(row["image"]);
-                std::cout << id << " " << image.size() << std::endl;
 
                 std::stringstream image_path;
                 image_path << cfg().img_out_dir() << "/img_" << std::setw(10) << std::setfill('0') << id << ".ppm";
