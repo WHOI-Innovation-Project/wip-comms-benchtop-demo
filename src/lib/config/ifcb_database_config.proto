@@ -1,10 +1,13 @@
 import "goby/common/protobuf/app3.proto";
 import "goby/middleware/protobuf/interprocess_config.proto";
+import "dccl/option_extensions.proto";
 
 package wip.protobuf;
 
 message IFCBDatabaseConfig
 {
+    option (dccl.msg).unit_system = "si";
+    
     optional goby.protobuf.App3Config app = 1;
     optional goby.protobuf.InterProcessPortalConfig interprocess = 2;
 
@@ -19,6 +22,9 @@ message IFCBDatabaseConfig
     optional int32 max_images_per_query = 20 [default = 10];
     optional string img_out_dir = 21 [default = "/media/data/img_out"];
 
+    // let progressive_imagery_g have this much time to process initial images before gathering more
+    optional int32 start_delay = 22 [default = 60, (dccl.field).units = { base_dimensions: "T" }];
+    
     optional float pass1_fraction = 25 [default = 0.05];
 
     // don't pull out images smaller than this

@@ -37,7 +37,8 @@ class IFCBDatabaseInterface : public AppBase
 public:
     IFCBDatabaseInterface() :
         AppBase(),
-        connection_(make_connection_string())
+        connection_(make_connection_string()),
+        start_(goby::time::now())
         {
             {
                 std::string query = "create table if not exists " + cfg().progress_table() +
@@ -78,7 +79,10 @@ public:
                     }
                     t.commit();                    
 
-                    if(p.entirely_unsent_images() < cfg().max_images_per_query())
+                    goby::time::MicroTime now(goby::time::now()),
+                        delay(cfg().start_delay_with_units());
+                    
+                    if(p.entirely_unsent_images() < cfg().max_images_per_query() && now > start_ + delay)
                         retrieve_more_images();
                 });
             
@@ -151,6 +155,7 @@ private:
     
 private:    
     pqxx::connection connection_;
+    goby::time::MicroTime start_;
 };
 
 int main(int argc, char* argv[])
