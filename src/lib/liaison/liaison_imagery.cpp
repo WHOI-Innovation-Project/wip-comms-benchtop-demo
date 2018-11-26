@@ -58,17 +58,16 @@ wip::LiaisonImagery::LiaisonImagery(const goby::common::protobuf::LiaisonConfig&
         {
             std::regex filename_regex(imagery_cfg_.initial_filename_regex());
             std::smatch match;
-
-            std::regex_search(it->filename().native(), match, filename_regex);
-
+	    std::string filename(it->filename().native());
+            std::regex_search(filename, match, filename_regex);
         
-            if(!match.empty())
+            if(!match.empty())	     
             {
-                auto image_id = std::stoi(match[1]);
-                dsl::protobuf::UpdatedImageEvent init_event;
-                init_event.set_image_id(image_id);
-                init_event.set_image_path(it->native());
-                handle_updated_image(init_event);
+               auto image_id = std::stoi(match[1]);
+	       dsl::protobuf::UpdatedImageEvent init_event;
+	       init_event.set_image_id(image_id);
+	       init_event.set_image_path(it->native());
+	       handle_updated_image(init_event);
             }
         
         }        
