@@ -34,6 +34,19 @@ ii  wip-comms                              0.1.0~alpha1+56+g91d5578-0~ubuntu16.0
 
 You'll need to install the [pyifcb](https://github.com/joefutrelle/pyifcb) and [wip-comms-ifcb-imagedb](https://github.com/WHOIGit/wip-comms-ifcb-imagedb) projects as well. For Ubuntu 16.04, I had to use [this branch](https://github.com/GobySoft/pyifcb/tree/ubuntu16.04) of `pyifcb`.
 
+### IFCB Windows Computer
+
+Used another USB-Ethernet adapter on the IFCB Windows computer to directly connect to the payload.
+
+Enable Internet Connection Sharing for the internet enabled adapter ("Local Area Connection 2", then set "Home networking connection: Local Area Connection 3"). Windows machine is 192.168.137.1/24 and other machines are DHCP (assigned to 192.168.137.x/24, but GobySoft payload is statically assigned to 192.168.137.10).
+
+### Samba Mount
+
+Set up read-only mount from the IFCB Windows machine to `/media/data/ifcb` in `/etc/fstab`:
+```
+//192.168.137.1/data /media/data/ifcb cifs username={user},password={password},vers=2.0,dir_mode=0555,file_mode=0444,x-systemd.automount,x-systemd.device-timeout=30 0 0
+```
+
 ### PostgresSQL
 
 The `wip-comms-ifcb-imagedb` and `wip-comms-benchtop-demo` communicate through a PostgresSQL server on the Payload. The database is `wipcomms` and the username should be `wipcomms`. The server needs to be installed and configured manually:
