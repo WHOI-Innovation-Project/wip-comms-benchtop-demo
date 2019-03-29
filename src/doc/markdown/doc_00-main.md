@@ -12,6 +12,8 @@ Documentation of the process of setting up this demonstration as motivation for 
 Documentation about the technical details of this software.
 
  - [Building](doc_01-build.md)
+ - [IFCB Shore Server Setup](doc_20-shore-server.md)
+ - [IFCB Payload Setup](doc_20-payload.md)
  - Dependencies (these are all open source projects that embody the concepts of [reusability](doc_11-reuse.md))
     - LLVM/Clang: https://clang.llvm.org/
     - Boost: https://www.boost.org/
